@@ -8,6 +8,12 @@ import (
 
 type RabbitOption func(op *option)
 
+func WithAddr(addr string) RabbitOption {
+	return func(op *option) {
+		op.Addr = addr
+	}
+}
+
 type option struct {
 	Addr     string
 	Name     string
