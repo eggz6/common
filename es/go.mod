@@ -1,4 +1,4 @@
-module github.com/eggz6/common/entity
+module github.com/eggz6/common/es
 
 go 1.14
 
