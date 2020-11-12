@@ -74,12 +74,33 @@ func newGame(id string, table *Table) *game {
 func (g *game) Start() {
 	go func(g *game) {
 		for {
+			render := false
 			select {
 			case c, _ := <-g.cmd:
 				c.Exec(context.Background(), g)
+				// todo broadcast event res
 			case r, _ := <-g.rend:
+				render = true
 				g.runnable(context.Background(), g, r)
+				// todo broadcast event res / game info
+			}
+
+			if !render {
+				select {
+				case r, _ := <-g.rend:
+					render = true
+					g.runnable(context.Background(), g, r)
+					// todo broadcast event res / game info
+				default:
+				}
 			}
 		}
 	}(g)
+}
+
+func (g *game) Render(d time.Duration) {
+	select {
+	case g.rend <- d:
+	default:
+	}
 }

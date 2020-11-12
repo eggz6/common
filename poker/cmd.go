@@ -7,6 +7,7 @@ import (
 )
 
 type Cmder interface {
+	Cmdres
 	Exec(ctx context.Context, g *game) error
 	Result() Cmdres
 }
@@ -28,6 +29,7 @@ func (g *game) DoSync(ctx context.Context, c Cmder) Cmdres {
 	g.cmd <- c
 
 	res := c.Result()
+
 	return res
 }
 
@@ -80,10 +82,6 @@ func (r *res) Result() Cmdres {
 	<-r.ch
 
 	return r
-}
-
-func (r *res) reset() {
-
 }
 
 func (r *res) Error() error {
