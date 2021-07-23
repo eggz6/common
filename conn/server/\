@@ -1,0 +1,52 @@
+package server
+
+import (
+	"net"
+	"sync"
+
+	"github.com/eggz6/common/conn"
+)
+
+type option struct {
+	port     string
+	session  conn.Session
+	listener net.Listener
+}
+
+type svr struct {
+	option
+}
+
+type Option func(opt *option)
+
+func Serve(ctx context.Context, options ...Option) error {
+	op := &option{}
+
+	for _, opt := range options {
+		opt(op)
+	}
+
+	s := &svr{option: *op}
+}
+
+func Listen(port string) (*Receiver, error) {
+	l, err := net.Listen("tcp", port)
+	if err != nil {
+		return nil, err
+	}
+
+	my := &listener{mu: sync.RWMutex{}, session: map[string]*Connection{}}
+
+	go func() {
+		for {
+			conn, err := l.Accept()
+			if err != nil {
+				return
+			}
+
+			go my.handShake(conn)
+		}
+	}()
+
+	return nil, nil
+}
