@@ -87,4 +87,10 @@ func Test_Recent(t *testing.T) {
 	if !ok {
 		t.Fatal("get recent failed. get c")
 	}
+
+	obj, ok := c.Get("d")
+	if !ok {
+		t.Fatal("get recent failed. get c")
+	}
+	t.Log("d:", obj)
 }

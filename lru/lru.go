@@ -77,6 +77,9 @@ func (c *cache) Put(key string, val interface{}) {
 
 		if kv == nil {
 			kv = c.allocPair(key, val)
+		} else {
+			kv.key = key
+			kv.val = val
 		}
 
 		ele := c.list.PushBack(kv)
