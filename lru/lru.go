@@ -21,6 +21,8 @@ type cache struct {
 	hash map[string]*list.Element
 	list *list.List
 	pool sync.Pool
+
+	mux sync.RWMutex
 }
 
 func NewCache(size uint) Cache {
@@ -42,6 +44,9 @@ func newcache(size uint) *cache {
 }
 
 func (c *cache) Get(key string) (interface{}, bool) {
+	c.mux.RLock()
+	defer c.mux.RUnlock()
+
 	v, ok := c.hash[key]
 	if !ok {
 		return nil, ok
@@ -64,6 +69,9 @@ func (c *cache) allocPair(key string, val interface{}) *pair {
 }
 
 func (c *cache) Put(key string, val interface{}) {
+	c.mux.Lock()
+	defer c.mux.Unlock()
+
 	v, ok := c.hash[key]
 	if !ok {
 		var kv *pair
