@@ -1,6 +1,9 @@
 package lru
 
-import "testing"
+import (
+	"fmt"
+	"testing"
+)
 
 func Test_New(t *testing.T) {
 	c := NewCache(10)
@@ -71,26 +74,26 @@ func Test_Recent(t *testing.T) {
 	c.Put("a", 1)
 	c.Put("b", 1)
 	c.Put("c", 1)
-	_, ok := c.Get("a")
+	a, ok := c.Get("a")
 	if !ok {
 		t.Fatal("get recent failed. get a")
 	}
 
 	c.Put("d", 1)
 
-	_, ok = c.Get("b")
-	if ok {
+	b, ok := c.Get("b")
+	if ok || fmt.Sprintf("%v", b) != fmt.Sprintf("%v", nil) {
 		t.Fatalf("get recent failed. expect=%v, atrual=%v", false, ok)
 	}
 
-	_, ok = c.Get("c")
-	if !ok {
+	vc, ok := c.Get("c")
+	if !ok || fmt.Sprintf("%v", vc) != "1" {
 		t.Fatal("get recent failed. get c")
 	}
 
 	obj, ok := c.Get("d")
-	if !ok {
+	if !ok || fmt.Sprintf("%v", obj) != "1" {
 		t.Fatal("get recent failed. get c")
 	}
-	t.Log("d:", obj)
+	t.Logf("d:%v, a:%v, b:%v, c:%v", obj, a, b, vc)
 }
